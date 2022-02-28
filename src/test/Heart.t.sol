@@ -237,18 +237,6 @@ contract HeartTest is DSTest {
         assertEq(composable.ownerOf(0), address(token));
     }
 
-    function testAddBackgroundNotOwner() public {
-        token.mint{ value: PAYMENT }();
-
-        MockComposable composable = new MockComposable(-1);
-        vm.prank(OTHER_ADDRESS);
-        composable.mint();
-
-        vm.prank(OTHER_ADDRESS);
-        vm.expectRevert(Heart.NotTokenOwner.selector);
-        composable.transferToToken(0, address(token), 0);
-    }
-
     function testEjectBackgroundToEOA() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
         
@@ -279,18 +267,6 @@ contract HeartTest is DSTest {
 
         assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(composable.ownerOf(0), address(token));
-    }
-
-    function testAddForegroundNotOwner() public {
-        token.mint{ value: PAYMENT }();
-
-        MockComposable composable = new MockComposable(1);
-        vm.prank(OTHER_ADDRESS);
-        composable.mint();
-
-        vm.prank(OTHER_ADDRESS);
-        vm.expectRevert(Heart.NotTokenOwner.selector);
-        composable.transferToToken(0, address(token), 0);
     }
 
     function testEjectForegroundToEOA() public {

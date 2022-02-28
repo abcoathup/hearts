@@ -9,8 +9,9 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
 import {IComposableToken} from "./IComposableToken.sol";
+import {ComposableToken} from "./ComposableToken.sol";
 
-contract Heart is ERC721, IComposableToken, Ownable {
+contract Heart is ERC721, ComposableToken, Ownable {
 
     using Colours for bytes3;
 
@@ -34,45 +35,24 @@ contract Heart is ERC721, IComposableToken, Ownable {
     /// @notice Thrown when supply cap reached
     error SupplyCapReached();
 
-    /// @notice Thrown when attempting to add composible token with same Z index
-    error SameZIndex();
-
-    /// @notice Thrown when attempting to add a not composible token
-    error NotComposableToken();
-
     /// EVENTS
 
     /// @notice Emitted when name changed
     event TokenNameChange (uint256 indexed tokenId, string tokenName);
 
-    int256 public immutable zIndex;
-
     uint256 public constant PRICE = 0.001 ether;
     uint256 public constant OWNER_ALLOCATION = 88;  
     uint256 public constant SUPPLY_CAP = 888;
-
-    struct ComposableToken {
-        address tokenAddress;
-        uint256 tokenId;
-    }
-
-    struct Composable {
-        ComposableToken background;
-        ComposableToken foreground;
-    }
-
-    mapping (uint256 => Composable) private _composables;
-    
+ 
     bool private ownerMinted = false;
 
     mapping (uint256 => bytes3) private _colours;
     mapping (uint256 => string) private _names;
 
-    constructor() ERC721("Heart", "HRT") {
-        zIndex = 0;
+    constructor() ERC721("Heart", "HRT") ComposableToken(0) {
     }
 
-    function supportsInterface(bytes4 interfaceId) public pure virtual override(IERC165, ERC721) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public pure virtual override(ComposableToken, ERC721) returns (bool) {
         return interfaceId == type(IComposableToken).interfaceId || super.supportsInterface(interfaceId);
     }
 
@@ -158,7 +138,7 @@ contract Heart is ERC721, IComposableToken, Ownable {
         return svg;
     }
 
-    function render(uint256 tokenId) public view returns (string memory) {
+    function render(uint256 tokenId) public view override returns (string memory) {
         string memory colourValue = string.concat('#',_colours[tokenId].toColour());
 
         return string.concat(
@@ -173,26 +153,6 @@ contract Heart is ERC721, IComposableToken, Ownable {
             '</g>',
             _renderForeground(tokenId)
         );
-    }
-
-    function _renderBackground(uint256 tokenId) private view returns (string memory) {
-        string memory background = "";
-
-        if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = IComposableToken(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
-        }
-
-        return background;
-    }
-
-    function _renderForeground(uint256 tokenId) private view returns (string memory) {
-        string memory foreground = "";
-
-        if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = IComposableToken(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
-        }
-
-        return foreground;
     }
 
     function withdraw(address to) public onlyOwner {
@@ -251,46 +211,4 @@ contract Heart is ERC721, IComposableToken, Ownable {
 
         return true;
     }
-
-    function onERC721Received(
-        address operator,
-        address from,
-        uint256 composableTokenId,
-        bytes calldata idData) external returns (bytes4) {
-
-        uint256 tokenId = Bytes.toUint256(idData);
-
-        if (ownerOf[tokenId] != from) revert NotTokenOwner();
-   
-        IComposableToken composableToken = IComposableToken(msg.sender);
-        if (!composableToken.supportsInterface(type(IComposableToken).interfaceId)) revert NotComposableToken();
-
-        if (composableToken.zIndex() < zIndex) {      
-             _composables[tokenId].background = ComposableToken(msg.sender, tokenId);
-        } 
-        else if (composableToken.zIndex() > zIndex) {      
-             _composables[tokenId].foreground = ComposableToken(msg.sender, tokenId);
-        }
-        else {
-            revert SameZIndex();
-        }
-
-        return this.onERC721Received.selector;
-    }
-
-
-    function ejectToken(uint256 tokenId, address composableToken, uint256 composableTokenId) external {
-        if (_composables[tokenId].background.tokenAddress == composableToken && 
-        _composables[tokenId].background.tokenId == composableTokenId) {
-           _composables[tokenId].background = ComposableToken(address(0), 0);
-        } 
-        else if (_composables[tokenId].foreground.tokenAddress == composableToken && 
-        _composables[tokenId].foreground.tokenId == composableTokenId) {
-            _composables[tokenId].foreground = ComposableToken(address(0), 0);
-        }
-
-        // TODO add support for ERC1155
-        ERC721(composableToken).safeTransferFrom(address(this), msg.sender, composableTokenId);
-    }
-
 }
