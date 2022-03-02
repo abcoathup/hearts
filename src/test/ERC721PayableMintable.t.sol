@@ -18,7 +18,6 @@ contract ERC721PayableMintableTest is DSTest {
     address constant PAYMENT_RECIPIENT = address(3);
     address constant TOKEN_HOLDER = address(4);
 
-    string constant TOKEN_NAME = "Token Name";
     string constant NAME = "Name";
     string constant SYMBOL = "SYM";
 
