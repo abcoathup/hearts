@@ -10,76 +10,37 @@ import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
 import {IComposableToken} from "./IComposableToken.sol";
 import {ComposableToken} from "./ComposableToken.sol";
+import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 import {NamedToken} from "./NamedToken.sol";
 
-contract Heart is ERC721, ComposableToken, NamedToken, Ownable {
+contract Heart is ERC721PayableMintable, ComposableToken, NamedToken {
 
     using Colours for bytes3;
 
     /// ERRORS
 
-    /// @notice Thrown when underpaying
-    error InsufficientPayment();
-
-    /// @notice Thrown when token doesn't exist
-    error NonexistentToken();
-
-    /// @notice Thrown when not the token owner
-    error NotTokenOwner();
-
-    /// @notice Thrown when owner already minted
-    error OwnerAlreadyMinted();
-
-    /// @notice Thrown when supply cap reached
-    error SupplyCapReached();
-
     /// EVENTS
 
-
-    uint256 public constant PRICE = 0.001 ether;
-    uint256 public constant OWNER_ALLOCATION = 88;  
-    uint256 public constant SUPPLY_CAP = 888;
- 
-    bool private ownerMinted = false;
-
     mapping (uint256 => bytes3) private _colours;
-    mapping (uint256 => string) private _names;
 
-    constructor() ERC721("Heart", "HRT") ComposableToken(0) NamedToken("Heart") {
+    constructor() 
+        ERC721PayableMintable("Heart", "HRT", 0.001 ether, 88, 888) 
+        ComposableToken(0) 
+        NamedToken("Heart") {
     }
 
     function supportsInterface(bytes4 interfaceId) public pure virtual override(ComposableToken, ERC721) returns (bool) {
         return interfaceId == type(IComposableToken).interfaceId || super.supportsInterface(interfaceId);
     }
 
-    function mint() public payable {
-        if (msg.value < PRICE) revert InsufficientPayment();
-        if (totalSupply >= SUPPLY_CAP) revert SupplyCapReached();
-        _mint();
-    }
-
-    function ownerMint() public onlyOwner {
-        if (ownerMinted) revert OwnerAlreadyMinted();
-
-        uint256 available = OWNER_ALLOCATION;
-        if (totalSupply + OWNER_ALLOCATION > SUPPLY_CAP) {
-            available = SUPPLY_CAP - totalSupply;
-        }
-
-        for (uint256 index = 0; index < available; index++) {
-            _mint();
-        }
-
-        ownerMinted = true;
-    }
-    
-    function _mint() private {
+    function _mint() internal override {
         uint256 tokenId = totalSupply;
-        _mint(msg.sender, tokenId);
-
+        
         // from: https://github.com/scaffold-eth/scaffold-eth/blob/48be9829d9c925e4b4cda8735ddc9ff0675d9751/packages/hardhat/contracts/YourCollectible.sol
         bytes32 predictableRandom = keccak256(abi.encodePacked(tokenId, blockhash(block.number), msg.sender, address(this)));
         _colours[tokenId] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
+
+        super._mint();
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
@@ -104,10 +65,6 @@ contract Heart is ERC721, ComposableToken, NamedToken, Ownable {
                 )
             )
         );
-    }
-
-    function _exists(uint256 tokenId) internal view virtual returns (bool) {
-        return ownerOf[tokenId] != address(0);
     }
 
     function _generateAttributes(uint256 tokenId) internal view returns (string memory) {
@@ -149,10 +106,6 @@ contract Heart is ERC721, ComposableToken, NamedToken, Ownable {
             '</g>',
             _renderForeground(tokenId)
         );
-    }
-
-    function withdraw(address to) public onlyOwner {
-        payable(to).transfer(address(this).balance);
     }
 
     // Based on The HashMarks

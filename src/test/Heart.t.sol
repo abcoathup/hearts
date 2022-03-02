@@ -43,93 +43,6 @@ contract HeartTest is DSTest {
         assertEq(token.ownerOf(0), address(this));
     }
 
-    function testMintWithInsufficientPayment(uint96 amount) public {
-        vm.assume(amount < PAYMENT);
-
-        vm.expectRevert(Heart.InsufficientPayment.selector);
-        token.mint{ value: amount }();
-
-        assertEq(address(token).balance, 0 ether);
-    }
-
-    function testMintWithinCap() public {
-        for (uint256 index = 0; index < token.SUPPLY_CAP(); index++) {
-            token.mint{ value: PAYMENT }();
-        }
-
-        assertEq(token.totalSupply(), token.SUPPLY_CAP());
-    }
-
-    function testMintOverCap() public {
-        for (uint256 index = 0; index < token.SUPPLY_CAP(); index++) {
-            token.mint{ value: PAYMENT }();
-        }
-
-        vm.expectRevert(Heart.SupplyCapReached.selector);
-        token.mint{ value: PAYMENT }();
-
-        assertEq(token.totalSupply(), token.SUPPLY_CAP());
-    }
-
-    function testOwnerMint() public {
-        vm.prank(OWNER);
-        token.ownerMint();
-
-        assertEq(token.totalSupply(), token.OWNER_ALLOCATION());
-        assertEq(token.ownerOf(0), OWNER);
-    }
-
-    function testOwnerMintWhenNotOwner() public {
-        vm.prank(OTHER_ADDRESS);
-        vm.expectRevert("Ownable: caller is not the owner");
-        token.ownerMint();
-    }
-
-    function testOwnerMintWhenOwnerAlreadyMinted() public {
-        vm.prank(OWNER);
-        token.ownerMint();
-
-        vm.prank(OWNER);
-        vm.expectRevert(Heart.OwnerAlreadyMinted.selector);
-        token.ownerMint();
-    }
-
-    function testOwnerMintNearCap() public {
-        for (uint256 index = 0; index < token.SUPPLY_CAP() - 1; index++) {
-            token.mint{ value: PAYMENT }();
-        }
-
-        vm.prank(OWNER);
-        token.ownerMint();
-
-        assertEq(token.totalSupply(), token.SUPPLY_CAP());
-        assertEq(token.ownerOf(token.totalSupply() - 1), OWNER);
-    }
-
-    /// Payment
-
-    function testWithdraw(uint96 amount) public {
-        vm.assume(amount >= PAYMENT);
-        token.mint{ value: amount }();
-
-        vm.prank(OWNER);
-        token.withdraw(PAYMENT_RECIPIENT);
-
-        assertEq(address(PAYMENT_RECIPIENT).balance, amount); 
-    }
-
-    function testWithdrawWhenNotOwner(uint96 amount) public {
-        vm.assume(amount >= PAYMENT);
-        token.mint{ value: amount }();
-
-        vm.prank(OTHER_ADDRESS);
-        vm.expectRevert("Ownable: caller is not the owner");
-        token.withdraw(OTHER_ADDRESS);
-
-        assertEq(address(token).balance, amount); 
-        assertEq(address(OTHER_ADDRESS).balance, 0 ether); 
-    }
-
     /// Token URI
 
     function testTokenURI() public {
@@ -139,7 +52,7 @@ contract HeartTest is DSTest {
     }
 
     function testTokenURINonexistentToken() public {
-        vm.expectRevert(Heart.NonexistentToken.selector);
+        vm.expectRevert(ERC721PayableMintable.NonexistentToken.selector);
         token.tokenURI(0);
     }
 
@@ -179,12 +92,12 @@ contract HeartTest is DSTest {
         token.mint{ value: PAYMENT }();
 
         vm.prank(OTHER_ADDRESS);
-        vm.expectRevert(Heart.NotTokenOwner.selector);
+        vm.expectRevert(ERC721PayableMintable.NotTokenOwner.selector);
         token.changeTokenName(0, TOKEN_NAME);
     }
 
     function testChangeTokenNameNonexistentToken() public {
-        vm.expectRevert(Heart.NonexistentToken.selector);
+        vm.expectRevert(ERC721PayableMintable.NonexistentToken.selector);
         token.changeTokenName(0, TOKEN_NAME);
     }
 
