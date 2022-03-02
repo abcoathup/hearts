@@ -167,6 +167,14 @@ contract HeartTest is DSTest {
         assertEq(token.tokenName(0), TOKEN_NAME);
     }
 
+    function testChangeTokenNameInvalidTokenName(string memory tokenName) public {
+        vm.assume(!token.validateTokenName(tokenName));
+        token.mint{ value: PAYMENT }();
+
+        vm.expectRevert(NamedToken.InvalidTokenName.selector);
+        token.changeTokenName(0, tokenName);
+    }
+
     function testChangeTokenNameNotTokenOwner() public {
         token.mint{ value: PAYMENT }();
 
@@ -178,48 +186,6 @@ contract HeartTest is DSTest {
     function testChangeTokenNameNonexistentToken() public {
         vm.expectRevert(Heart.NonexistentToken.selector);
         token.changeTokenName(0, TOKEN_NAME);
-    }
-
-    function testChangeTokenNameInvalidTokenNameEmptyString() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, "");
-    }
-
-    function testChangeTokenNameInvalidTokenNameSpecialCharacters() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, "-");
-    }
-
-    function testChangeTokenNameInvalidTokenNameLeadingSpace() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, string(abi.encodePacked(" ", TOKEN_NAME)));
-    }
-
-    function testChangeTokenNameInvalidTokenNameTrailingSpace() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, string(abi.encodePacked(TOKEN_NAME, " ")));
-    }
-
-    function testChangeTokenNameInvalidTokenNameMultipleSpaces() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, string(abi.encodePacked(TOKEN_NAME, "  ", TOKEN_NAME)));
-    }
-
-    function testChangeTokenNameInvalidTokenNameTooLong() public {
-        token.mint{ value: PAYMENT }();
-
-        vm.expectRevert(Heart.InvalidTokenName.selector);
-        token.changeTokenName(0, "01234567890123456789012345");
     }
 
     function testAddBackground(int256 zIndex) public {
