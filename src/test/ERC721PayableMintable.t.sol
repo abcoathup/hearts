@@ -37,6 +37,8 @@ contract ERC721PayableMintableTest is DSTest {
         assertEq(token.totalSupply(), 1);
         assertEq(token.balanceOf(address(this)), 1);
         assertEq(token.ownerOf(0), address(this));
+
+        assertEq(token.ownerOf(1), address(0));
     }
 
     function testMintWithInsufficientPayment(uint96 amount) public {
@@ -46,6 +48,10 @@ contract ERC721PayableMintableTest is DSTest {
         token.mint{ value: amount }();
 
         assertEq(address(token).balance, 0 ether);
+        
+        assertEq(token.totalSupply(), 0);
+        assertEq(token.balanceOf(address(this)), 0);
+        assertEq(token.ownerOf(0), address(0));
     }
 
     function testMintWithinCap() public {
@@ -54,6 +60,8 @@ contract ERC721PayableMintableTest is DSTest {
         }
 
         assertEq(token.totalSupply(), token.supplyCap());
+        assertEq(token.balanceOf(address(this)), token.supplyCap());
+        assertEq(token.ownerOf(token.supplyCap()), address(0));
     }
 
     function testMintOverCap() public {
@@ -65,6 +73,8 @@ contract ERC721PayableMintableTest is DSTest {
         token.mint{ value: PAYMENT }();
 
         assertEq(token.totalSupply(), token.supplyCap());
+        assertEq(token.balanceOf(address(this)), token.supplyCap());
+        assertEq(token.ownerOf(token.supplyCap()), address(0));
     }
 
     function testOwnerMint() public {
@@ -73,12 +83,18 @@ contract ERC721PayableMintableTest is DSTest {
 
         assertEq(token.totalSupply(), token.ownerAllocation());
         assertEq(token.ownerOf(0), OWNER);
+        assertEq(token.balanceOf(OWNER), token.ownerAllocation());
+        assertEq(token.ownerOf(token.ownerAllocation()), address(0));
     }
 
     function testOwnerMintWhenNotOwner() public {
         vm.prank(OTHER_ADDRESS);
         vm.expectRevert("Ownable: caller is not the owner");
         token.ownerMint();
+
+        assertEq(token.totalSupply(), 0);
+        assertEq(token.balanceOf(address(OTHER_ADDRESS)), 0);
+        assertEq(token.ownerOf(0), address(0));
     }
 
     function testOwnerMintWhenOwnerAlreadyMinted() public {
@@ -88,6 +104,10 @@ contract ERC721PayableMintableTest is DSTest {
         vm.prank(OWNER);
         vm.expectRevert(ERC721PayableMintable.OwnerAlreadyMinted.selector);
         token.ownerMint();
+
+        assertEq(token.totalSupply(), token.ownerAllocation());
+        assertEq(token.balanceOf(address(OWNER)), token.ownerAllocation());
+        assertEq(token.ownerOf(token.ownerAllocation()), address(0));        
     }
 
     function testOwnerMintNearCap() public {
@@ -98,8 +118,10 @@ contract ERC721PayableMintableTest is DSTest {
         vm.prank(OWNER);
         token.ownerMint();
 
-        assertEq(token.totalSupply(), token.supplyCap());
         assertEq(token.ownerOf(token.totalSupply() - 1), OWNER);
+        assertEq(token.totalSupply(), token.supplyCap());
+        assertEq(token.balanceOf(address(this)), token.supplyCap() - 1);
+        assertEq(token.ownerOf(token.supplyCap()), address(0));
     }
 
     /// Payment
