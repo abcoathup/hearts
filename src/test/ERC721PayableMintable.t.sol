@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "ds-test/test.sol";
-import "forge-std/stdlib.sol";
-import "forge-std/Vm.sol";
-import "../ERC721PayableMintable.sol";
-import "./mocks/MockComposable.sol";
+import {DSTest} from "ds-test/test.sol";
+import {Vm} from "forge-std/Vm.sol";
+import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
+import {MockERC721PayableMintable} from "./mocks/MockERC721PayableMintable.sol";
 
 contract ERC721PayableMintableTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    ERC721PayableMintable token;
+    MockERC721PayableMintable token;
     
     uint256 constant PAYMENT = 0.001 ether;
     
@@ -18,22 +17,14 @@ contract ERC721PayableMintableTest is DSTest {
     address constant PAYMENT_RECIPIENT = address(3);
     address constant TOKEN_HOLDER = address(4);
 
-    string constant NAME = "Name";
-    string constant SYMBOL = "SYM";
-
-    uint256 public constant PRICE = 0.001 ether;
-    uint256 public constant OWNER_ALLOCATION = 88;  
-    uint256 public constant SUPPLY_CAP = 888;
-    
-
     function setUp() public {
         vm.prank(OWNER);
-        token = new ERC721PayableMintable(NAME, SYMBOL, PRICE, OWNER_ALLOCATION, SUPPLY_CAP);
+        token = new MockERC721PayableMintable();
     }
 
     function testMetadata() public {
-        assertEq(token.name(), NAME);
-        assertEq(token.symbol(), SYMBOL);
+        assertEq(token.name(), token.NAME());
+        assertEq(token.symbol(), token.SYMBOL());
     }
     
     /// Mint
@@ -133,18 +124,5 @@ contract ERC721PayableMintableTest is DSTest {
 
         assertEq(address(token).balance, amount); 
         assertEq(address(OTHER_ADDRESS).balance, 0 ether); 
-    }
-
-    /// Token URI
-
-    function testTokenURI() public {
-        token.mint{ value: PAYMENT }();
-
-        token.tokenURI(0);
-    }
-
-    function testTokenURINonexistentToken() public {
-        vm.expectRevert(ERC721PayableMintable.NonexistentToken.selector);
-        token.tokenURI(0);
     }
 }

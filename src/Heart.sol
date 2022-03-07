@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.12;
 
-import {ERC721} from "solmate/tokens/ERC721.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IComposableToken} from "./IComposableToken.sol";
-import {ComposableToken} from "./ComposableToken.sol";
-import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
+import {IComposableSVGToken} from "./IComposableSVGToken.sol";
+import {ERC721PayableMintableComposableSVG} from "./ERC721PayableMintableComposableSVG.sol";
 import {NamedToken} from "./NamedToken.sol";
 
-contract Heart is ERC721PayableMintable, ComposableToken, NamedToken {
+contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
 
     using Colours for bytes3;
 
@@ -24,13 +20,8 @@ contract Heart is ERC721PayableMintable, ComposableToken, NamedToken {
     mapping (uint256 => bytes3) private _colours;
 
     constructor() 
-        ERC721PayableMintable("Heart", "HRT", 0.001 ether, 88, 888) 
-        ComposableToken(0) 
+        ERC721PayableMintableComposableSVG("Heart", "HRT", 0.001 ether, 88, 888, 0)
         NamedToken("Heart") {
-    }
-
-    function supportsInterface(bytes4 interfaceId) public pure virtual override(ComposableToken, ERC721) returns (bool) {
-        return interfaceId == type(IComposableToken).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function _mint() internal override {

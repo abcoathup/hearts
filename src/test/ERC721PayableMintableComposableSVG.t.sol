@@ -1,34 +1,42 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "ds-test/test.sol";
-import "forge-std/stdlib.sol";
-import "forge-std/Vm.sol";
-import "../Box.sol";
-import "./mocks/MockComposable.sol";
+import {DSTest} from "ds-test/test.sol";
+import {Vm} from "forge-std/Vm.sol";
+import {MockERC721ComposableSVG} from "./mocks/MockERC721ComposableSVG.sol";
+import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
+import {ERC721PayableMintableComposableSVG} from "../ERC721PayableMintableComposableSVG.sol";
+import {MockERC721PayableMintableComposableSVG} from "./mocks/MockERC721PayableMintableComposableSVG.sol";
 
-contract BoxTest is DSTest {
+contract ERC721PayableMintableComposableSVGTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    Box token;
+    MockERC721PayableMintableComposableSVG token;
     
-    uint256 constant PAYMENT = 0.0001 ether;
+    uint256 constant PAYMENT = 0.001 ether;
     
     address constant OTHER_ADDRESS = address(1);
     address constant OWNER = address(2);
     address constant PAYMENT_RECIPIENT = address(3);
     address constant TOKEN_HOLDER = address(4);
-
-    string constant TOKEN_NAME = "Token Name";
     
+    string constant NAME = "Name";
+    string constant SYMBOL = "SYM";
+
+    uint256 public constant PRICE = 0.001 ether;
+    uint256 public constant OWNER_ALLOCATION = 88;  
+    uint256 public constant SUPPLY_CAP = 888;
+
+    int256 public constant Z_INDEX = 0;
+
 
     function setUp() public {
         vm.prank(OWNER);
-        token = new Box();
+        token = new MockERC721PayableMintableComposableSVG();
     }
 
     function testMetadata() public {
-        assertEq(token.name(), "Box");
-        assertEq(token.symbol(), "BOX");
+        assertEq(token.name(), NAME);
+        assertEq(token.symbol(), SYMBOL);
     }
     
     /// Mint
@@ -43,39 +51,17 @@ contract BoxTest is DSTest {
         assertEq(token.ownerOf(0), address(this));
     }
 
-    /// Token URI
-
-    function testTokenURI() public {
-        token.mint{ value: PAYMENT }();
-
-        token.tokenURI(0);
-    }
-
-    function testTokenURINonexistentToken() public {
-        vm.expectRevert(ERC721PayableMintable.NonexistentToken.selector);
-        token.tokenURI(0);
-    }
-
-    /// Render
-
-    function testRender() public {
-        token.mint{ value: PAYMENT }();
-
-        emit log_string(token.render(0));
-    }
+    /// Compose
 
     function testAddBackground(int256 zIndex) public {
-        vm.assume(zIndex < 0);
+        vm.assume(zIndex < Z_INDEX);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(zIndex);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
-
-        string memory renderedToken = token.render(0);
 
         composable.transferToToken(0, address(token), 0);
 
-        assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(composable.ownerOf(0), address(token));
     }
 
@@ -85,7 +71,7 @@ contract BoxTest is DSTest {
         vm.prank(TOKEN_HOLDER);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(-1);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(-1);
         vm.prank(TOKEN_HOLDER);
         composable.mint();
 
@@ -97,17 +83,14 @@ contract BoxTest is DSTest {
     }
 
     function testAddForeground(int256 zIndex) public {
-        vm.assume(zIndex > 0);
+        vm.assume(zIndex > Z_INDEX);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(zIndex);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
-
-        string memory renderedToken = token.render(0);
 
         composable.transferToToken(0, address(token), 0);
 
-        assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(composable.ownerOf(0), address(token));
     }
 
@@ -117,7 +100,7 @@ contract BoxTest is DSTest {
         vm.prank(TOKEN_HOLDER);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(1);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(1);
         vm.prank(TOKEN_HOLDER);
         composable.mint();
 
@@ -131,17 +114,14 @@ contract BoxTest is DSTest {
     function testAddForegroundAndBackground() public {
         token.mint{ value: PAYMENT }();
 
-        string memory renderedToken = token.render(0);
-
-        MockComposable foreground = new MockComposable(1);
+        MockERC721ComposableSVG foreground = new MockERC721ComposableSVG(1);
         foreground.mint();
         foreground.transferToToken(0, address(token), 0);
 
-        MockComposable background = new MockComposable(1);
+        MockERC721ComposableSVG background = new MockERC721ComposableSVG(1);
         background.mint();
         background.transferToToken(0, address(token), 0);
 
-        assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(foreground.ownerOf(0), address(token));
         assertEq(background.ownerOf(0), address(token));
     }

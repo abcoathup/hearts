@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "ds-test/test.sol";
-import "forge-std/stdlib.sol";
-import "forge-std/Vm.sol";
-import "../Heart.sol";
-import "./mocks/MockComposable.sol";
+import {DSTest} from "ds-test/test.sol";
+import {Vm} from "forge-std/Vm.sol";
+import {MockERC721ComposableSVG} from "./mocks/MockERC721ComposableSVG.sol";
+import {NamedToken} from "../NamedToken.sol";
+import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
+import {Heart} from "../Heart.sol";
 
 contract HeartTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
@@ -105,7 +106,7 @@ contract HeartTest is DSTest {
         vm.assume(zIndex < 0);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(zIndex);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
 
         string memory renderedToken = token.render(0);
@@ -122,7 +123,7 @@ contract HeartTest is DSTest {
         vm.prank(TOKEN_HOLDER);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(-1);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(-1);
         vm.prank(TOKEN_HOLDER);
         composable.mint();
 
@@ -137,7 +138,7 @@ contract HeartTest is DSTest {
         vm.assume(zIndex > 0);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(zIndex);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
 
         string memory renderedToken = token.render(0);
@@ -154,7 +155,7 @@ contract HeartTest is DSTest {
         vm.prank(TOKEN_HOLDER);
         token.mint{ value: PAYMENT }();
 
-        MockComposable composable = new MockComposable(1);
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(1);
         vm.prank(TOKEN_HOLDER);
         composable.mint();
 
@@ -170,11 +171,11 @@ contract HeartTest is DSTest {
 
         string memory renderedToken = token.render(0);
 
-        MockComposable foreground = new MockComposable(1);
+        MockERC721ComposableSVG foreground = new MockERC721ComposableSVG(1);
         foreground.mint();
         foreground.transferToToken(0, address(token), 0);
 
-        MockComposable background = new MockComposable(1);
+        MockERC721ComposableSVG background = new MockERC721ComposableSVG(1);
         background.mint();
         background.transferToToken(0, address(token), 0);
 

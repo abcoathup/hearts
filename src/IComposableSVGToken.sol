@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-interface IComposableToken is IERC165 {
+interface IComposableSVGToken is IERC165 {
     function zIndex() external view returns (int256);
 
     function render(uint256 tokenId) external view returns (string memory);

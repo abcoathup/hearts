@@ -4,7 +4,7 @@ pragma solidity ^0.8.12;
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ERC721PayableMintable is ERC721, Ownable {
+abstract contract ERC721PayableMintable is ERC721, Ownable {
 
     /// ERRORS
 
@@ -65,10 +65,6 @@ contract ERC721PayableMintable is ERC721, Ownable {
     function _mint() internal virtual {
         uint256 tokenId = totalSupply;
         _mint(msg.sender, tokenId);
-
-        // from: https://github.com/scaffold-eth/scaffold-eth/blob/48be9829d9c925e4b4cda8735ddc9ff0675d9751/packages/hardhat/contracts/YourCollectible.sol
-        // bytes32 predictableRandom = keccak256(abi.encodePacked(tokenId, blockhash(block.number), msg.sender, address(this)));
-        // _colours[tokenId] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
     }
 
     function _exists(uint256 tokenId) internal view virtual returns (bool) {
@@ -77,11 +73,5 @@ contract ERC721PayableMintable is ERC721, Ownable {
 
     function withdraw(address to) public onlyOwner {
         payable(to).transfer(address(this).balance);
-    }
-
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        if (!_exists(tokenId)) revert NonexistentToken();
-
-        return "";
     }
 }

@@ -3,17 +3,19 @@ pragma solidity ^0.8.12;
 
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IComposableToken} from "./IComposableToken.sol";
+import {IComposableSVGToken} from "./IComposableSVGToken.sol";
+import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-abstract contract ComposableToken is IComposableToken {
+abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, IComposableSVGToken, IERC721Receiver {
 
     /// ERRORS
 
-    /// @notice Thrown when attempting to add composible token with same Z index
+    /// @notice Thrown when attempting to add composable token with same Z index
     error SameZIndex();
 
-    /// @notice Thrown when attempting to add a not composible token
+    /// @notice Thrown when attempting to add a not composable token
     error NotComposableToken();
 
     /// EVENTS
@@ -31,25 +33,27 @@ abstract contract ComposableToken is IComposableToken {
     }
 
     mapping (uint256 => Composable) private _composables;
-    
-    bool private ownerMinted = false;
 
-    mapping (uint256 => bytes3) private _colours;
-    mapping (uint256 => string) private _names;
-
-    constructor(int256 z) {
-        zIndex = z;
+    constructor(
+        string memory name_, 
+        string memory symbol_, 
+        uint256 price_, 
+        uint256 ownerAllocation_,
+        uint256 supplyCap_,
+        int256 z) 
+        ERC721PayableMintable(name_, symbol_, price_, ownerAllocation_, supplyCap_) {
+        zIndex = z; 
     }
 
-    function supportsInterface(bytes4 interfaceId) public pure virtual override returns (bool) {
-        return interfaceId == type(IComposableToken).interfaceId;
+    function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
+        return interfaceId == type(IComposableSVGToken).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function _renderBackground(uint256 tokenId) internal view returns (string memory) {
         string memory background = "";
 
         if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = IComposableToken(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
+            background = IComposableSVGToken(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
         }
 
         return background;
@@ -59,7 +63,7 @@ abstract contract ComposableToken is IComposableToken {
         string memory foreground = "";
 
         if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = IComposableToken(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
+            foreground = IComposableSVGToken(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
         }
 
         return foreground;
@@ -73,14 +77,14 @@ abstract contract ComposableToken is IComposableToken {
 
         uint256 tokenId = Bytes.toUint256(idData);
    
-        IComposableToken composableToken = IComposableToken(msg.sender);
-        if (!composableToken.supportsInterface(type(IComposableToken).interfaceId)) revert NotComposableToken();
+        IComposableSVGToken composableToken = IComposableSVGToken(msg.sender);
+        if (!composableToken.supportsInterface(type(IComposableSVGToken).interfaceId)) revert NotComposableToken();
 
         if (composableToken.zIndex() < zIndex) {      
-             _composables[tokenId].background = Token(msg.sender, tokenId);
+             _composables[tokenId].background = Token(msg.sender, composableTokenId);
         } 
         else if (composableToken.zIndex() > zIndex) {      
-             _composables[tokenId].foreground = Token(msg.sender, tokenId);
+             _composables[tokenId].foreground = Token(msg.sender, composableTokenId);
         }
         else {
             revert SameZIndex();

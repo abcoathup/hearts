@@ -2,7 +2,6 @@
 pragma solidity ^0.8.12;
 
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
 
 contract NamedToken {

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-import "ds-test/test.sol";
-import "forge-std/stdlib.sol";
-import "forge-std/Vm.sol";
+import {DSTest} from "ds-test/test.sol";
+import {Vm} from "forge-std/Vm.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import "./mocks/MockNamedToken.sol";
+import {MockNamedToken} from "./mocks/MockNamedToken.sol";
+import {NamedToken} from "../NamedToken.sol";
 
 contract NamedTokenTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
