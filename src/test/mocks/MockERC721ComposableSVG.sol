@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IComposableSVGToken} from "../../IComposableSVGToken.sol";
+import {IERC4888} from "../../IERC4888.sol";
 
-contract MockERC721ComposableSVG is ERC721, IComposableSVGToken {
+contract MockERC721ComposableSVG is ERC721, IERC4888 {
     int256 public immutable zIndex;
 
     constructor(int256 z) ERC721("Mock Composable", "MC") {
@@ -13,7 +13,7 @@ contract MockERC721ComposableSVG is ERC721, IComposableSVGToken {
     }
 
     function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
-        return interfaceId == type(IComposableSVGToken).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC4888).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function tokenURI(uint256) public pure virtual override returns (string memory) {}

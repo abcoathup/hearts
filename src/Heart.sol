@@ -5,7 +5,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IComposableSVGToken} from "./IComposableSVGToken.sol";
+import {IERC4888} from "./IERC4888.sol";
 import {ERC721PayableMintableComposableSVG} from "./ERC721PayableMintableComposableSVG.sol";
 import {NamedToken} from "./NamedToken.sol";
 

@@ -3,12 +3,12 @@ pragma solidity ^0.8.12;
 
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IComposableSVGToken} from "./IComposableSVGToken.sol";
+import {IERC4888} from "./IERC4888.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, IComposableSVGToken, IERC721Receiver {
+abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, IERC4888, IERC721Receiver {
 
     /// ERRORS
 
@@ -55,14 +55,14 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
     }
 
     function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
-        return interfaceId == type(IComposableSVGToken).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC4888).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function _renderBackground(uint256 tokenId) internal view returns (string memory) {
         string memory background = "";
 
         if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = IComposableSVGToken(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
+            background = IERC4888(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
         }
 
         return background;
@@ -72,7 +72,7 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
         string memory foreground = "";
 
         if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = IComposableSVGToken(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
+            foreground = IERC4888(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
         }
 
         return foreground;
@@ -109,8 +109,8 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
         if (!_exists(tokenId)) revert NonexistentToken();
         if (ownerOf[tokenId] != from) revert NotTokenOwner();
    
-        IComposableSVGToken composableToken = IComposableSVGToken(msg.sender);
-        if (!composableToken.supportsInterface(type(IComposableSVGToken).interfaceId)) revert NotComposableToken();
+        IERC4888 composableToken = IERC4888(msg.sender);
+        if (!composableToken.supportsInterface(type(IERC4888).interfaceId)) revert NotComposableToken();
 
         if (composableToken.zIndex() < zIndex) {  
             if (_composables[tokenId].background.tokenAddress != address(0)) revert BackgroundAlreadyAdded();

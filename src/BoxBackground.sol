@@ -8,10 +8,10 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IComposableSVGToken} from "./IComposableSVGToken.sol";
+import {IERC4888} from "./IERC4888.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 
-contract BoxBackground is ERC721PayableMintable, IComposableSVGToken {
+contract BoxBackground is ERC721PayableMintable, IERC4888 {
 
     using Colours for bytes3;
 
@@ -29,7 +29,7 @@ contract BoxBackground is ERC721PayableMintable, IComposableSVGToken {
     }
 
     function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
-        return interfaceId == type(IComposableSVGToken).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC4888).interfaceId || super.supportsInterface(interfaceId);
     }
 
     function _mint() internal override {
