@@ -17,9 +17,8 @@ abstract contract ERC721PayableMintable is ERC721, Ownable {
     /// @notice Thrown when supply cap reached
     error SupplyCapReached();
 
+    /// @notice Thrown when token doesn't exist
     error NonexistentToken();
-
-    error NotTokenOwner();
 
     /// EVENTS
 

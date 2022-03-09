@@ -6,6 +6,7 @@ import {Vm} from "forge-std/Vm.sol";
 import {MockERC721ComposableSVG} from "./mocks/MockERC721ComposableSVG.sol";
 import {NamedToken} from "../NamedToken.sol";
 import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
+import {ERC721PayableMintableComposableSVG} from "../ERC721PayableMintableComposableSVG.sol";
 import {Heart} from "../Heart.sol";
 
 contract HeartTest is DSTest {
@@ -93,7 +94,7 @@ contract HeartTest is DSTest {
         token.mint{ value: PAYMENT }();
 
         vm.prank(OTHER_ADDRESS);
-        vm.expectRevert(ERC721PayableMintable.NotTokenOwner.selector);
+        vm.expectRevert(ERC721PayableMintableComposableSVG.NotTokenOwner.selector);
         token.changeTokenName(0, TOKEN_NAME);
     }
 
@@ -111,7 +112,7 @@ contract HeartTest is DSTest {
 
         string memory renderedToken = token.render(0);
 
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(composable.ownerOf(0), address(token));
@@ -128,7 +129,7 @@ contract HeartTest is DSTest {
         composable.mint();
 
         vm.prank(TOKEN_HOLDER);
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(TOKEN_HOLDER), address(token), 0, abi.encode(0));
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
@@ -143,7 +144,7 @@ contract HeartTest is DSTest {
 
         string memory renderedToken = token.render(0);
 
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(composable.ownerOf(0), address(token));
@@ -160,7 +161,7 @@ contract HeartTest is DSTest {
         composable.mint();
 
         vm.prank(TOKEN_HOLDER);
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(TOKEN_HOLDER), address(token), 0, abi.encode(0));
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
@@ -173,11 +174,11 @@ contract HeartTest is DSTest {
 
         MockERC721ComposableSVG foreground = new MockERC721ComposableSVG(1);
         foreground.mint();
-        foreground.transferToToken(0, address(token), 0);
+        foreground.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
-        MockERC721ComposableSVG background = new MockERC721ComposableSVG(1);
+        MockERC721ComposableSVG background = new MockERC721ComposableSVG(-1);
         background.mint();
-        background.transferToToken(0, address(token), 0);
+        background.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertTrue(keccak256(abi.encodePacked(token.render(0))) != keccak256(abi.encodePacked(renderedToken)));
         assertEq(foreground.ownerOf(0), address(token));

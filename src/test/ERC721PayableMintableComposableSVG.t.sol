@@ -60,7 +60,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
 
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(token));
     }
@@ -76,7 +76,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.mint();
 
         vm.prank(TOKEN_HOLDER);
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(TOKEN_HOLDER), address(token), 0, abi.encode(0));
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
@@ -89,7 +89,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
         composable.mint();
 
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(token));
     }
@@ -105,7 +105,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.mint();
 
         vm.prank(TOKEN_HOLDER);
-        composable.transferToToken(0, address(token), 0);
+        composable.safeTransferFrom(address(TOKEN_HOLDER), address(token), 0, abi.encode(0));
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
@@ -116,13 +116,96 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
 
         MockERC721ComposableSVG foreground = new MockERC721ComposableSVG(1);
         foreground.mint();
-        foreground.transferToToken(0, address(token), 0);
+        foreground.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
-        MockERC721ComposableSVG background = new MockERC721ComposableSVG(1);
+        MockERC721ComposableSVG background = new MockERC721ComposableSVG(-1);
         background.mint();
-        background.transferToToken(0, address(token), 0);
+        background.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(foreground.ownerOf(0), address(token));
         assertEq(background.ownerOf(0), address(token));
+    }
+
+    function testAddNotTokenOwner(int256 zIndex) public {
+        vm.assume(zIndex != Z_INDEX);
+        payable(TOKEN_HOLDER).transfer(1 ether);
+        vm.prank(TOKEN_HOLDER);
+        token.mint{ value: PAYMENT }();
+
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
+
+        composable.mint();
+
+        vm.expectRevert(ERC721PayableMintableComposableSVG.NotTokenOwner.selector);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
+
+        assertEq(composable.ownerOf(0), address(this));
+    }
+
+    function testAddNonexistentToken(int256 zIndex) public {
+        vm.assume(zIndex != Z_INDEX);
+
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
+
+        composable.mint();
+
+        vm.expectRevert(ERC721PayableMintable.NonexistentToken.selector);
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
+
+        assertEq(composable.ownerOf(0), address(this));
+    }
+
+    function testAddBackgroundAlreadyAdded(int256 zIndex) public {
+        vm.assume(zIndex < Z_INDEX);
+        token.mint{ value: PAYMENT }();
+
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
+        composable.mint();
+
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
+
+        composable.mint();
+
+        vm.expectRevert(ERC721PayableMintableComposableSVG.BackgroundAlreadyAdded.selector);
+        composable.safeTransferFrom(address(this), address(token), 1, abi.encode(0));
+
+        assertEq(composable.ownerOf(0), address(token));
+        assertEq(composable.ownerOf(1), address(this));
+    }
+
+    function testAddForegroundAlreadyAdded(int256 zIndex) public {
+        vm.assume(zIndex > Z_INDEX);
+        token.mint{ value: PAYMENT }();
+
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(zIndex);
+        composable.mint();
+
+        composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
+
+        composable.mint();
+
+        vm.expectRevert(ERC721PayableMintableComposableSVG.ForegroundAlreadyAdded.selector);
+        composable.safeTransferFrom(address(this), address(token), 1, abi.encode(0));
+
+        assertEq(composable.ownerOf(0), address(token));
+        assertEq(composable.ownerOf(1), address(this));
+    }
+
+    function testEjectNotTokenOwner() public {
+        payable(TOKEN_HOLDER).transfer(1 ether);
+        
+        vm.prank(TOKEN_HOLDER);
+        token.mint{ value: PAYMENT }();
+
+        MockERC721ComposableSVG composable = new MockERC721ComposableSVG(-1);
+        vm.prank(TOKEN_HOLDER);
+        composable.mint();
+
+        vm.prank(TOKEN_HOLDER);
+        composable.safeTransferFrom(address(TOKEN_HOLDER), address(token), 0, abi.encode(0));
+
+        vm.prank(OTHER_ADDRESS);
+        vm.expectRevert(ERC721PayableMintableComposableSVG.NotTokenOwner.selector);
+        token.ejectToken(0, address(composable), 0);
     }
 }

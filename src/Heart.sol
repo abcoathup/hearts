@@ -19,9 +19,11 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
 
     mapping (uint256 => bytes3) private _colours;
 
+    string constant NAME = "Heart";
+
     constructor() 
-        ERC721PayableMintableComposableSVG("Heart", "HRT", 0.001 ether, 88, 888, 0)
-        NamedToken("Heart") {
+        ERC721PayableMintableComposableSVG(NAME, "HRT", 0.001 ether, 88, 888, 0)
+        NamedToken(NAME) {
     }
 
     function _mint() internal override {

@@ -25,8 +25,4 @@ contract MockERC721ComposableSVG is ERC721, IComposableSVGToken {
     function render(uint256 tokenId) public view returns (string memory) {
         return '<g id="mock"></g>';
     }
-
-    function transferToToken(uint256 tokenId, address toToken, uint256 toTokenId) external {
-        safeTransferFrom(msg.sender, toToken, tokenId, abi.encode(toTokenId));
-    }
 }
