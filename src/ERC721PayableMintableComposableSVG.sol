@@ -78,6 +78,26 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
         return foreground;
     }
 
+    function _backgroundName(uint256 tokenId) internal view returns (string memory) {
+        string memory background = "";
+
+        if (_composables[tokenId].background.tokenAddress != address(0)) {
+            background = ERC721(_composables[tokenId].background.tokenAddress).name();
+        }
+
+        return background;
+    }
+
+    function _foregroundName(uint256 tokenId) internal view returns (string memory) {
+        string memory foreground = "";
+
+        if (_composables[tokenId].foreground.tokenAddress != address(0)) {
+            foreground = ERC721(_composables[tokenId].foreground.tokenAddress).name();
+        }
+
+        return foreground;
+    }
+
     function onERC721Received(
         address operator,
         address from,
@@ -110,7 +130,7 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
 
     function ejectToken(uint256 tokenId, address composableToken, uint256 composableTokenId) external {
         if (_msgSender() != ownerOf[tokenId]) revert NotTokenOwner();
-        
+
         if (_composables[tokenId].background.tokenAddress == composableToken && 
         _composables[tokenId].background.tokenId == composableTokenId) {
            _composables[tokenId].background = Token(address(0), 0);

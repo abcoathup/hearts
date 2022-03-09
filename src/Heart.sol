@@ -60,11 +60,17 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
         );
     }
 
+    function _generateHeartValue(uint256 tokenId) internal pure returns (string memory) {
+        return Strings.toString(((tokenId % 23) + 7) / 3);
+    }
+
     function _generateAttributes(uint256 tokenId) internal view returns (string memory) {
 
-        //TODO get name of accessory and background
-
-        string memory attributes = string.concat('{"trait_type": "colour", "value": "', _colours[tokenId].toColour(), '"}');
+        string memory attributes = string.concat(
+        '{"trait_type": "heart", "value": "', _generateHeartValue(tokenId), '"}'
+        ',{"trait_type": "colour", "value": "', _colours[tokenId].toColour(), '"}'
+        ',{"trait_type": "background", "value": "', _backgroundName(tokenId), '"}'
+        ',{"trait_type": "foreground", "value": "', _foregroundName(tokenId), '"}');
 
         return string.concat('"attributes": [', attributes, ']');
     }

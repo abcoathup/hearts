@@ -28,6 +28,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
 
     int256 public constant Z_INDEX = 0;
 
+    string constant COMPOSABLE_NAME = "Mock Composable";
 
     function setUp() public {
         vm.prank(OWNER);
@@ -63,6 +64,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(token));
+        assertEq(token.backgroundName(0), COMPOSABLE_NAME);
     }
 
     function testEjectBackgroundToEOA() public {
@@ -80,6 +82,9 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
+
+        assertEq(composable.ownerOf(0), address(TOKEN_HOLDER));
+        assertEq(token.backgroundName(0), "");
     }
 
     function testAddForeground(int256 zIndex) public {
@@ -92,6 +97,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(token));
+        assertEq(token.foregroundName(0), COMPOSABLE_NAME);
     }
 
     function testEjectForegroundToEOA() public {
@@ -109,6 +115,9 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
 
         vm.prank(TOKEN_HOLDER);
         token.ejectToken(0, address(composable), 0);
+
+        assertEq(composable.ownerOf(0), address(TOKEN_HOLDER));
+        assertEq(token.foregroundName(0), "");
     }
 
     function testAddForegroundAndBackground() public {
@@ -124,6 +133,8 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
 
         assertEq(foreground.ownerOf(0), address(token));
         assertEq(background.ownerOf(0), address(token));
+        assertEq(token.foregroundName(0), COMPOSABLE_NAME);
+        assertEq(token.backgroundName(0), COMPOSABLE_NAME);
     }
 
     function testAddNotTokenOwner(int256 zIndex) public {
@@ -140,6 +151,8 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(this));
+        assertEq(token.foregroundName(0), "");
+        assertEq(token.backgroundName(0), "");
     }
 
     function testAddNonexistentToken(int256 zIndex) public {
@@ -153,6 +166,8 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         composable.safeTransferFrom(address(this), address(token), 0, abi.encode(0));
 
         assertEq(composable.ownerOf(0), address(this));
+        assertEq(token.foregroundName(0), "");
+        assertEq(token.backgroundName(0), "");
     }
 
     function testAddBackgroundAlreadyAdded(int256 zIndex) public {

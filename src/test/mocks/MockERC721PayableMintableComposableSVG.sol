@@ -28,4 +28,12 @@ contract MockERC721PayableMintableComposableSVG is ERC721PayableMintableComposab
     function render(uint256 tokenId) external view returns (string memory) {
         return RENDER;
     }
+
+    function foregroundName(uint256 tokenId) external view returns (string memory) {
+        return _foregroundName(tokenId);
+    }
+
+    function backgroundName(uint256 tokenId) external view returns (string memory) {
+        return _backgroundName(tokenId);
+    }
 }
