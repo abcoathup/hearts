@@ -5,7 +5,6 @@ import {ERC721} from "solmate/tokens/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 abstract contract ERC721PayableMintable is ERC721, Ownable {
-
     /// ERRORS
 
     /// @notice Thrown when underpaying
@@ -25,19 +24,19 @@ abstract contract ERC721PayableMintable is ERC721, Ownable {
     bool private ownerMinted = false;
 
     uint256 public immutable price;
-    uint256 public immutable ownerAllocation;  
+    uint256 public immutable ownerAllocation;
     uint256 public immutable supplyCap;
 
     constructor(
-        string memory name_, 
-        string memory symbol_, 
-        uint256 price_, 
+        string memory name_,
+        string memory symbol_,
+        uint256 price_,
         uint256 ownerAllocation_,
-        uint256 supplyCap_) 
-        ERC721(name_, symbol_) {
-            price = price_;
-            ownerAllocation = ownerAllocation_;
-            supplyCap = supplyCap_;
+        uint256 supplyCap_
+    ) ERC721(name_, symbol_) {
+        price = price_;
+        ownerAllocation = ownerAllocation_;
+        supplyCap = supplyCap_;
     }
 
     function mint() public payable {
@@ -60,7 +59,7 @@ abstract contract ERC721PayableMintable is ERC721, Ownable {
 
         ownerMinted = true;
     }
-    
+
     function _mint() internal virtual {
         uint256 tokenId = totalSupply;
         _mint(msg.sender, tokenId);

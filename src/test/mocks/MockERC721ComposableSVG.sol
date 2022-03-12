@@ -12,11 +12,25 @@ contract MockERC721ComposableSVG is ERC721, IERC4888 {
         zIndex = z;
     }
 
-    function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
-        return interfaceId == type(IERC4888).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        pure
+        virtual
+        override(ERC721, IERC165)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC4888).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
-    function tokenURI(uint256) public pure virtual override returns (string memory) {}
+    function tokenURI(uint256)
+        public
+        pure
+        virtual
+        override
+        returns (string memory)
+    {}
 
     function mint() public virtual {
         _mint(msg.sender, totalSupply);

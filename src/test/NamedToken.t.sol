@@ -24,21 +24,30 @@ contract NamedTokenTest is DSTest {
     }
 
     function testTokenName(uint256 tokenId) public {
-        assertEq(token.tokenName(tokenId), string.concat("Mock NamedToken #", Strings.toString(tokenId)));
+        assertEq(
+            token.tokenName(tokenId),
+            string.concat("Mock NamedToken #", Strings.toString(tokenId))
+        );
     }
 
     function testChangeTokenName(uint256 tokenId) public {
         token.changeTokenName(tokenId, TOKEN_NAME);
-       
+
         assertEq(token.tokenName(tokenId), TOKEN_NAME);
     }
 
-    function testChangeTokenNameInvalidTokenName(uint256 tokenId, string memory tokenName) public {
+    function testChangeTokenNameInvalidTokenName(
+        uint256 tokenId,
+        string memory tokenName
+    ) public {
         vm.assume(!token.validateTokenName(tokenName));
         vm.expectRevert(NamedToken.InvalidTokenName.selector);
         token.changeTokenName(tokenId, tokenName);
-       
-        assertEq(token.tokenName(tokenId), string.concat("Mock NamedToken #", Strings.toString(tokenId)));
+
+        assertEq(
+            token.tokenName(tokenId),
+            string.concat("Mock NamedToken #", Strings.toString(tokenId))
+        );
     }
 
     function testValidateTokenNameEmptyString() public {
@@ -58,7 +67,11 @@ contract NamedTokenTest is DSTest {
     }
 
     function testValidateTokenNameMultipleSpaces() public {
-        assertTrue(!token.validateTokenName(string.concat(TOKEN_NAME, "  ", TOKEN_NAME)));
+        assertTrue(
+            !token.validateTokenName(
+                string.concat(TOKEN_NAME, "  ", TOKEN_NAME)
+            )
+        );
     }
 
     function testValidateTokenNameTooLong() public {

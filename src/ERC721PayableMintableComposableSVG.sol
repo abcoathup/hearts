@@ -8,8 +8,11 @@ import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, IERC4888, IERC721Receiver {
-
+abstract contract ERC721PayableMintableComposableSVG is
+    ERC721PayableMintable,
+    IERC4888,
+    IERC721Receiver
+{
     /// ERRORS
 
     /// @notice Thrown when attempting to add composable token with same Z index
@@ -41,58 +44,94 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
         Token foreground;
     }
 
-    mapping (uint256 => Composable) private _composables;
+    mapping(uint256 => Composable) private _composables;
 
     constructor(
-        string memory name_, 
-        string memory symbol_, 
-        uint256 price_, 
+        string memory name_,
+        string memory symbol_,
+        uint256 price_,
         uint256 ownerAllocation_,
         uint256 supplyCap_,
-        int256 z) 
-        ERC721PayableMintable(name_, symbol_, price_, ownerAllocation_, supplyCap_) {
-        zIndex = z; 
+        int256 z
+    )
+        ERC721PayableMintable(
+            name_,
+            symbol_,
+            price_,
+            ownerAllocation_,
+            supplyCap_
+        )
+    {
+        zIndex = z;
     }
 
-    function supportsInterface(bytes4 interfaceId) public pure virtual override(ERC721, IERC165) returns (bool) {
-        return interfaceId == type(IERC4888).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        pure
+        virtual
+        override(ERC721, IERC165)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC4888).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
-    function _renderBackground(uint256 tokenId) internal view returns (string memory) {
+    function _renderBackground(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
         string memory background = "";
 
         if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = IERC4888(_composables[tokenId].background.tokenAddress).render(_composables[tokenId].background.tokenId);
+            background = IERC4888(_composables[tokenId].background.tokenAddress)
+                .render(_composables[tokenId].background.tokenId);
         }
 
         return background;
     }
 
-    function _renderForeground(uint256 tokenId) internal view returns (string memory) {
+    function _renderForeground(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
         string memory foreground = "";
 
         if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = IERC4888(_composables[tokenId].foreground.tokenAddress).render(_composables[tokenId].foreground.tokenId);
+            foreground = IERC4888(_composables[tokenId].foreground.tokenAddress)
+                .render(_composables[tokenId].foreground.tokenId);
         }
 
         return foreground;
     }
 
-    function _backgroundName(uint256 tokenId) internal view returns (string memory) {
+    function _backgroundName(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
         string memory background = "";
 
         if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = ERC721(_composables[tokenId].background.tokenAddress).name();
+            background = ERC721(_composables[tokenId].background.tokenAddress)
+                .name();
         }
 
         return background;
     }
 
-    function _foregroundName(uint256 tokenId) internal view returns (string memory) {
+    function _foregroundName(uint256 tokenId)
+        internal
+        view
+        returns (string memory)
+    {
         string memory foreground = "";
 
         if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = ERC721(_composables[tokenId].foreground.tokenAddress).name();
+            foreground = ERC721(_composables[tokenId].foreground.tokenAddress)
+                .name();
         }
 
         return foreground;
@@ -102,45 +141,61 @@ abstract contract ERC721PayableMintableComposableSVG is ERC721PayableMintable, I
         address operator,
         address from,
         uint256 composableTokenId,
-        bytes calldata idData) external returns (bytes4) {
-
+        bytes calldata idData
+    ) external returns (bytes4) {
         uint256 tokenId = Bytes.toUint256(idData);
 
         if (!_exists(tokenId)) revert NonexistentToken();
         if (ownerOf[tokenId] != from) revert NotTokenOwner();
-   
-        IERC4888 composableToken = IERC4888(msg.sender);
-        if (!composableToken.supportsInterface(type(IERC4888).interfaceId)) revert NotComposableToken();
 
-        if (composableToken.zIndex() < zIndex) {  
-            if (_composables[tokenId].background.tokenAddress != address(0)) revert BackgroundAlreadyAdded();
-            _composables[tokenId].background = Token(msg.sender, composableTokenId);
-        } 
-        else if (composableToken.zIndex() > zIndex) {      
-            if (_composables[tokenId].foreground.tokenAddress != address(0)) revert ForegroundAlreadyAdded();
-            _composables[tokenId].foreground = Token(msg.sender, composableTokenId);
-        }
-        else {
+        IERC4888 composableToken = IERC4888(msg.sender);
+        if (!composableToken.supportsInterface(type(IERC4888).interfaceId))
+            revert NotComposableToken();
+
+        if (composableToken.zIndex() < zIndex) {
+            if (_composables[tokenId].background.tokenAddress != address(0))
+                revert BackgroundAlreadyAdded();
+            _composables[tokenId].background = Token(
+                msg.sender,
+                composableTokenId
+            );
+        } else if (composableToken.zIndex() > zIndex) {
+            if (_composables[tokenId].foreground.tokenAddress != address(0))
+                revert ForegroundAlreadyAdded();
+            _composables[tokenId].foreground = Token(
+                msg.sender,
+                composableTokenId
+            );
+        } else {
             revert SameZIndex();
         }
 
         return this.onERC721Received.selector;
     }
 
-
-    function ejectToken(uint256 tokenId, address composableToken, uint256 composableTokenId) external {
+    function ejectToken(
+        uint256 tokenId,
+        address composableToken,
+        uint256 composableTokenId
+    ) external {
         if (_msgSender() != ownerOf[tokenId]) revert NotTokenOwner();
 
-        if (_composables[tokenId].background.tokenAddress == composableToken && 
-        _composables[tokenId].background.tokenId == composableTokenId) {
-           _composables[tokenId].background = Token(address(0), 0);
-        } 
-        else if (_composables[tokenId].foreground.tokenAddress == composableToken && 
-        _composables[tokenId].foreground.tokenId == composableTokenId) {
+        if (
+            _composables[tokenId].background.tokenAddress == composableToken &&
+            _composables[tokenId].background.tokenId == composableTokenId
+        ) {
+            _composables[tokenId].background = Token(address(0), 0);
+        } else if (
+            _composables[tokenId].foreground.tokenAddress == composableToken &&
+            _composables[tokenId].foreground.tokenId == composableTokenId
+        ) {
             _composables[tokenId].foreground = Token(address(0), 0);
         }
 
-        ERC721(composableToken).safeTransferFrom(address(this), msg.sender, composableTokenId);
+        ERC721(composableToken).safeTransferFrom(
+            address(this),
+            msg.sender,
+            composableTokenId
+        );
     }
-
 }

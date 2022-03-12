@@ -6,10 +6,11 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {NamedToken} from "../../NamedToken.sol";
 
 contract MockNamedToken is NamedToken {
-    constructor() NamedToken("Mock NamedToken") {
-    }
+    constructor() NamedToken("Mock NamedToken") {}
 
-    function changeTokenName(uint256 tokenId, string memory newTokenName) external {
+    function changeTokenName(uint256 tokenId, string memory newTokenName)
+        external
+    {
         _changeTokenName(tokenId, newTokenName);
     }
 }
