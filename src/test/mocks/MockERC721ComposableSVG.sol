@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import {IERC4888} from "../../IERC4888.sol";
+import {IERC4883} from "../../IERC4883.sol";
 
-contract MockERC721ComposableSVG is ERC721, IERC4888 {
+contract MockERC721ComposableSVG is ERC721, IERC4883 {
     int256 public immutable zIndex;
 
     constructor(int256 z) ERC721("Mock Composable", "MC") {
@@ -20,7 +20,7 @@ contract MockERC721ComposableSVG is ERC721, IERC4888 {
         returns (bool)
     {
         return
-            interfaceId == type(IERC4888).interfaceId ||
+            interfaceId == type(IERC4883).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 

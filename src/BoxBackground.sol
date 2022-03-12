@@ -8,10 +8,10 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {Colours} from "./libraries/Colours.sol";
 import {Bytes} from "./libraries/Bytes.sol";
-import {IERC4888} from "./IERC4888.sol";
+import {IERC4883} from "./IERC4883.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 
-contract BoxBackground is ERC721PayableMintable, IERC4888 {
+contract BoxBackground is ERC721PayableMintable, IERC4883 {
     using Colours for bytes3;
 
     /// ERRORS
@@ -34,7 +34,7 @@ contract BoxBackground is ERC721PayableMintable, IERC4888 {
         returns (bool)
     {
         return
-            interfaceId == type(IERC4888).interfaceId ||
+            interfaceId == type(IERC4883).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
