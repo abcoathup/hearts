@@ -32,6 +32,12 @@ abstract contract ERC721PayableMintableComposableSVG is
 
     /// EVENTS
 
+    /// @notice Emitted when composable token added
+    event ComposableAdded(uint256 tokenId, address composableToken, uint256 composableTokenId);
+    
+    /// @notice Emitted when composable token removed
+    event ComposableRemoved(uint256 tokenId, address composableToken, uint256 composableTokenId);
+
     int256 public immutable zIndex;
 
     struct Token {
@@ -170,10 +176,12 @@ abstract contract ERC721PayableMintableComposableSVG is
             revert SameZIndex();
         }
 
+        emit ComposableAdded(tokenId, msg.sender, composableTokenId);
+
         return this.onERC721Received.selector;
     }
 
-    function ejectToken(
+    function removeComposable(
         uint256 tokenId,
         address composableToken,
         uint256 composableTokenId
@@ -197,5 +205,7 @@ abstract contract ERC721PayableMintableComposableSVG is
             msg.sender,
             composableTokenId
         );
+
+        emit ComposableRemoved(tokenId, composableToken, composableTokenId);
     }
 }

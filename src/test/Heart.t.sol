@@ -131,7 +131,7 @@ contract HeartTest is DSTest {
         assertEq(composable.ownerOf(0), address(token));
     }
 
-    function testEjectBackgroundToEOA() public {
+    function testRemoveBackgroundToEOA() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
 
         vm.prank(TOKEN_HOLDER);
@@ -150,7 +150,7 @@ contract HeartTest is DSTest {
         );
 
         vm.prank(TOKEN_HOLDER);
-        token.ejectToken(0, address(composable), 0);
+        token.removeComposable(0, address(composable), 0);
     }
 
     function testAddForeground(int256 zIndex) public {
@@ -178,7 +178,7 @@ contract HeartTest is DSTest {
         assertEq(composable.ownerOf(0), address(token));
     }
 
-    function testEjectForegroundToEOA() public {
+    function testRemoveForegroundToEOA() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
 
         vm.prank(TOKEN_HOLDER);
@@ -197,7 +197,7 @@ contract HeartTest is DSTest {
         );
 
         vm.prank(TOKEN_HOLDER);
-        token.ejectToken(0, address(composable), 0);
+        token.removeComposable(0, address(composable), 0);
     }
 
     function testAddForegroundAndBackground() public {

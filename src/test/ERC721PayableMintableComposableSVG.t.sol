@@ -74,7 +74,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         assertEq(token.backgroundName(0), COMPOSABLE_NAME);
     }
 
-    function testEjectBackgroundToEOA() public {
+    function testRemoveBackgroundToEOA() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
 
         vm.prank(TOKEN_HOLDER);
@@ -93,7 +93,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         );
 
         vm.prank(TOKEN_HOLDER);
-        token.ejectToken(0, address(composable), 0);
+        token.removeComposable(0, address(composable), 0);
 
         assertEq(composable.ownerOf(0), address(TOKEN_HOLDER));
         assertEq(token.backgroundName(0), "");
@@ -119,7 +119,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         assertEq(token.foregroundName(0), COMPOSABLE_NAME);
     }
 
-    function testEjectForegroundToEOA() public {
+    function testRemoveForegroundToEOA() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
 
         vm.prank(TOKEN_HOLDER);
@@ -138,7 +138,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         );
 
         vm.prank(TOKEN_HOLDER);
-        token.ejectToken(0, address(composable), 0);
+        token.removeComposable(0, address(composable), 0);
 
         assertEq(composable.ownerOf(0), address(TOKEN_HOLDER));
         assertEq(token.foregroundName(0), "");
@@ -284,7 +284,7 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         assertEq(composable.ownerOf(1), address(this));
     }
 
-    function testEjectNotTokenOwner() public {
+    function testRemoveNotTokenOwner() public {
         payable(TOKEN_HOLDER).transfer(1 ether);
 
         vm.prank(TOKEN_HOLDER);
@@ -306,6 +306,6 @@ contract ERC721PayableMintableComposableSVGTest is DSTest {
         vm.expectRevert(
             ERC721PayableMintableComposableSVG.NotTokenOwner.selector
         );
-        token.ejectToken(0, address(composable), 0);
+        token.removeComposable(0, address(composable), 0);
     }
 }
