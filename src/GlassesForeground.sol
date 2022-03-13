@@ -185,4 +185,8 @@ contract GlassesForeground is ERC721PayableMintable, IERC4883 {
                 "</g>"
             );
     }
+
+    function addToComposable(uint256 tokenId, address composableToken, uint256 composableTokenId) external {
+        safeTransferFrom(msg.sender, composableToken, tokenId, abi.encode(composableTokenId));
+    }
 }
