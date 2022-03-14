@@ -50,7 +50,7 @@ abstract contract ERC721PayableMintableComposableSVG is
         Token foreground;
     }
 
-    mapping(uint256 => Composable) private _composables;
+    mapping(uint256 => Composable) public composables;
 
     constructor(
         string memory name_,
@@ -90,9 +90,9 @@ abstract contract ERC721PayableMintableComposableSVG is
     {
         string memory background = "";
 
-        if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = IERC4883(_composables[tokenId].background.tokenAddress)
-                .render(_composables[tokenId].background.tokenId);
+        if (composables[tokenId].background.tokenAddress != address(0)) {
+            background = IERC4883(composables[tokenId].background.tokenAddress)
+                .render(composables[tokenId].background.tokenId);
         }
 
         return background;
@@ -105,9 +105,9 @@ abstract contract ERC721PayableMintableComposableSVG is
     {
         string memory foreground = "";
 
-        if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = IERC4883(_composables[tokenId].foreground.tokenAddress)
-                .render(_composables[tokenId].foreground.tokenId);
+        if (composables[tokenId].foreground.tokenAddress != address(0)) {
+            foreground = IERC4883(composables[tokenId].foreground.tokenAddress)
+                .render(composables[tokenId].foreground.tokenId);
         }
 
         return foreground;
@@ -120,8 +120,8 @@ abstract contract ERC721PayableMintableComposableSVG is
     {
         string memory background = "";
 
-        if (_composables[tokenId].background.tokenAddress != address(0)) {
-            background = ERC721(_composables[tokenId].background.tokenAddress)
+        if (composables[tokenId].background.tokenAddress != address(0)) {
+            background = ERC721(composables[tokenId].background.tokenAddress)
                 .name();
         }
 
@@ -135,8 +135,8 @@ abstract contract ERC721PayableMintableComposableSVG is
     {
         string memory foreground = "";
 
-        if (_composables[tokenId].foreground.tokenAddress != address(0)) {
-            foreground = ERC721(_composables[tokenId].foreground.tokenAddress)
+        if (composables[tokenId].foreground.tokenAddress != address(0)) {
+            foreground = ERC721(composables[tokenId].foreground.tokenAddress)
                 .name();
         }
 
@@ -159,16 +159,16 @@ abstract contract ERC721PayableMintableComposableSVG is
             revert NotComposableToken();
 
         if (composableToken.zIndex() < zIndex) {
-            if (_composables[tokenId].background.tokenAddress != address(0))
+            if (composables[tokenId].background.tokenAddress != address(0))
                 revert BackgroundAlreadyAdded();
-            _composables[tokenId].background = Token(
+            composables[tokenId].background = Token(
                 msg.sender,
                 composableTokenId
             );
         } else if (composableToken.zIndex() > zIndex) {
-            if (_composables[tokenId].foreground.tokenAddress != address(0))
+            if (composables[tokenId].foreground.tokenAddress != address(0))
                 revert ForegroundAlreadyAdded();
-            _composables[tokenId].foreground = Token(
+            composables[tokenId].foreground = Token(
                 msg.sender,
                 composableTokenId
             );
@@ -189,15 +189,15 @@ abstract contract ERC721PayableMintableComposableSVG is
         if (_msgSender() != ownerOf[tokenId]) revert NotTokenOwner();
 
         if (
-            _composables[tokenId].background.tokenAddress == composableToken &&
-            _composables[tokenId].background.tokenId == composableTokenId
+            composables[tokenId].background.tokenAddress == composableToken &&
+            composables[tokenId].background.tokenId == composableTokenId
         ) {
-            _composables[tokenId].background = Token(address(0), 0);
+            composables[tokenId].background = Token(address(0), 0);
         } else if (
-            _composables[tokenId].foreground.tokenAddress == composableToken &&
-            _composables[tokenId].foreground.tokenId == composableTokenId
+            composables[tokenId].foreground.tokenAddress == composableToken &&
+            composables[tokenId].foreground.tokenId == composableTokenId
         ) {
-            _composables[tokenId].foreground = Token(address(0), 0);
+            composables[tokenId].foreground = Token(address(0), 0);
         }
 
         ERC721(composableToken).safeTransferFrom(
