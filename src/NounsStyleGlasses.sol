@@ -11,7 +11,7 @@ import {Bytes} from "./libraries/Bytes.sol";
 import {IERC4883} from "./IERC4883.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 
-contract GlassesForeground is ERC721PayableMintable, IERC4883 {
+contract NounsStyleGlasses is ERC721PayableMintable, IERC4883 {
     using Colours for bytes3;
 
     /// ERRORS
@@ -74,7 +74,7 @@ contract GlassesForeground is ERC721PayableMintable, IERC4883 {
             " #",
             Strings.toString(tokenId)
         );
-        string memory description = "Glasses NFT.";
+        string memory description = "Nouns style glasses NFT. Inspired by Nouns public domain glasses artwork.";
 
         string memory image = _generateBase64Image(tokenId);
         string memory attributes = _generateAttributes(tokenId);
@@ -132,7 +132,7 @@ contract GlassesForeground is ERC721PayableMintable, IERC4883 {
             '<svg id="',
             "glasses",
             Strings.toString(tokenId),
-            '" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">',
+            '" viewBox="0 0 288 288" xmlns="http://www.w3.org/2000/svg">',
             render(tokenId),
             "</svg>"
         );
@@ -153,35 +153,14 @@ contract GlassesForeground is ERC721PayableMintable, IERC4883 {
 
         return
             string.concat(
-                '<g id="color">'
-                '<path fill="',
+                '<g id="glasses">'
+                '<path stroke="',
                 colourValue,
-                '" stroke="',
-                colourValue,
-                '" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" d="M37.5891,34.151 c1.0309-0.1557,2.3936-0.355,3.1719,3.5553c0.5088,2.5561,2.4518,2.3815,3.5921,4.0059c2.3054,3.2843,7.0505,5.5111,11.3652,5.5111 c6.9036,0,12.5-5.5964,12.5-12.5l0.105-4.9141l1.895,0.0501v-4.1273c0,0-18.9318-16.1788-29.4804,5.3212h-2.9812h-0.4615H34.314 c-10.5486-21.5-29.4804-5.3212-29.4804-5.3212v4.1273l1.895-0.0501l0.105,4.9141c0,6.9036,5.5964,12.5,12.5,12.5 c4.3147,0,9.1189-2.1861,11.3652-5.5111"/>'
-                '<path fill="',
-                colourValue,
-                '" stroke="',
-                colourValue,
-                '" stroke-miterlimit="10" stroke-width="2" d="M37.5891,34.151 c1.0309-0.1557,2.3936-0.355,3.1719,3.5553c0.5088,2.5561,2.4518,2.3815,3.5921,4.0059c2.3054,3.2843,7.0505,5.5111,11.3652,5.5111"/>'
-                '<path fill="',
-                colourValue,
-                '" stroke="',
-                colourValue,
-                '" stroke-miterlimit="10" stroke-width="2" d="M37.7915,33.8289 c-6.7199-0.9921-2.7978,3.4384-3.0884,3.9105c-1.3989,2.2732-2.5354,2.0263-3.6757,3.6507 c-2.3054,3.2843-7.0505,5.5111-11.3652,5.5111"/>'
-                '<circle cx="19.7664" cy="33.5577" r="9.5798" fill="#000000" stroke="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.8457"/>'
-                '<circle cx="55.2856" cy="33.5577" r="9.5798" fill="#000000" stroke="none" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.8457"/>'
-                '<path fill="',
-                colourValue,
-                '" stroke="',
-                colourValue,
-                '" stroke-miterlimit="10" stroke-width="2" d="M34.0453,39.8045"/>'
-                '</g>'
-                '<g id="line">'
-                '<path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" d="M30.6989,41.7122c-2.2463,3.325-7.0505,5.5111-11.3652,5.5111c-6.9036,0-12.5-5.5964-12.5-12.5l-0.105-4.9141l-1.895,0.0501 v-4.1273c0,0,18.9318-16.1788,29.4804,5.3212h2.9812h0.4615h2.9812c10.5486-21.5,29.4804-5.3212,29.4804-5.3212v4.1273 l-1.895-0.0501l-0.105,4.9141c0,6.9036-5.5964,12.5-12.5,12.5c-4.3147,0-9.1189-2.1861-11.3652-5.5111"/>'
-                '<path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" d="M34.761,37.7063c0-1.6569,1.3431-3,3-3c1.6569,0,3,1.3431,3,3"/>'
-                '<circle cx="19.7664" cy="33.5577" r="9.5798" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.8457"/>'
-                '<circle cx="55.2856" cy="33.5577" r="9.5798" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.8457"/>'
+                '" stroke-width="5" d="M144.5 89.5h25v25h-25zm-50 22.5v-10M92 99.5h50m-32.5-10h25v25h-25z"/>'
+                '<path fill="black" d="M122 92h10v20h-10z"/>'
+                '<path fill="black" d="M157 92h10v20h-10z"/>'
+                '<path fill="white" d="M112 92h10v20h-10z"/>'
+                '<path fill="white" d="M147 92h10v20h-10z"/>'
                 '</g>'
             );
     }

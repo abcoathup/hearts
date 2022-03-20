@@ -5,11 +5,11 @@ import {DSTest} from "ds-test/test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
 import {MockERC721PayableMintableComposableSVG} from "./mocks/MockERC721PayableMintableComposableSVG.sol";
-import {GlassesForeground} from "../GlassesForeground.sol";
+import {NounsStyleGlasses} from "../NounsStyleGlasses.sol";
 
-contract GlassesForegroundTest is DSTest {
+contract NounsStyleGlassesTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    GlassesForeground token;
+    NounsStyleGlasses token;
 
     uint256 constant PAYMENT = 0.0001 ether;
 
@@ -27,7 +27,7 @@ contract GlassesForegroundTest is DSTest {
     
     function setUp() public {
         vm.prank(OWNER);
-        token = new GlassesForeground();
+        token = new NounsStyleGlasses();
     }
 
     function testMetadata() public {
