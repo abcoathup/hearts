@@ -53,8 +53,10 @@ abstract contract ERC721PayableMintable is ERC721, Ownable {
             available = supplyCap - totalSupply;
         }
 
-        for (uint256 index = 0; index < available; index++) {
+        for (uint256 index = 0; index < available;) {
             _mint();
+
+            unchecked { ++index; }
         }
 
         ownerMinted = true;
