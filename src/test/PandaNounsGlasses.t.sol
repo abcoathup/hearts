@@ -5,11 +5,11 @@ import {DSTest} from "ds-test/test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
 import {MockERC721PayableMintableComposableSVG} from "./mocks/MockERC721PayableMintableComposableSVG.sol";
-import {PandaNounsStyleGlasses} from "../PandaNounsStyleGlasses.sol";
+import {PandaNounsGlasses} from "../PandaNounsGlasses.sol";
 
-contract PandaNounsStyleGlassesTest is DSTest {
+contract PandaNounsGlassesTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    PandaNounsStyleGlasses token;
+    PandaNounsGlasses token;
 
     uint256 constant PAYMENT = 0.0001 ether;
 
@@ -20,14 +20,14 @@ contract PandaNounsStyleGlassesTest is DSTest {
 
     string constant TOKEN_NAME = "Token Name";
 
-    string constant NAME = "Panda Nouns style glasses";
+    string constant NAME = "Panda Nouns Glasses";
     string constant SYMBOL = "PNG";
 
     int256 Z_INDEX = 100;
     
     function setUp() public {
         vm.prank(OWNER);
-        token = new PandaNounsStyleGlasses();
+        token = new PandaNounsGlasses();
     }
 
     function testMetadata() public {

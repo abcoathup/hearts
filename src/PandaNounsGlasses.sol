@@ -11,7 +11,7 @@ import {Bytes} from "./libraries/Bytes.sol";
 import {IERC4883} from "./IERC4883.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 
-contract PandaNounsStyleGlasses is ERC721PayableMintable, IERC4883 {
+contract PandaNounsGlasses is ERC721PayableMintable, IERC4883 {
     using Colours for bytes3;
 
     /// ERRORS
@@ -23,7 +23,7 @@ contract PandaNounsStyleGlasses is ERC721PayableMintable, IERC4883 {
     int256 public immutable zIndex;
 
     constructor()
-        ERC721PayableMintable("Panda Nouns style glasses", "PNG", 0.0001 ether, 13, 130)
+        ERC721PayableMintable("Panda Nouns Glasses", "PNG", 0.0001 ether, 13, 130)
     {
         zIndex = 100;
     }
@@ -74,7 +74,7 @@ contract PandaNounsStyleGlasses is ERC721PayableMintable, IERC4883 {
             " #",
             Strings.toString(tokenId)
         );
-        string memory description = "Panda Nouns style glasses NFT. Inspired by Nouns public domain glasses artwork.";
+        string memory description = "Panda Nouns style glasses. Inspired by Nouns public domain glasses artwork.";
 
         string memory image = _generateBase64Image(tokenId);
         string memory attributes = _generateAttributes(tokenId);
