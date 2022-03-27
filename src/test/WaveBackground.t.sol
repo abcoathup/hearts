@@ -5,13 +5,13 @@ import {DSTest} from "ds-test/test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
 import {MockERC721PayableMintableComposableSVG} from "./mocks/MockERC721PayableMintableComposableSVG.sol";
-import {BoxBackground} from "../BoxBackground.sol";
+import {WaveBackground} from "../WaveBackground.sol";
 
-contract BoxBackgroundTest is DSTest {
+contract WaveBackgroundTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    BoxBackground token;
+    WaveBackground token;
 
-    uint256 constant PAYMENT = 0.0001 ether;
+    uint256 constant PAYMENT = 0 ether;
 
     address constant OTHER_ADDRESS = address(1);
     address constant OWNER = address(2);
@@ -20,14 +20,14 @@ contract BoxBackgroundTest is DSTest {
 
     string constant TOKEN_NAME = "Token Name";
 
-    string constant NAME = "Box";
-    string constant SYMBOL = "BOX";
+    string constant NAME = "Wave Background";
+    string constant SYMBOL = "WAVE";
 
     int256 Z_INDEX = -100;
 
     function setUp() public {
         vm.prank(OWNER);
-        token = new BoxBackground();
+        token = new WaveBackground();
     }
 
     function testMetadata() public {

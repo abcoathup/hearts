@@ -23,7 +23,7 @@ contract PandaNounsGlasses is ERC721PayableMintable, IERC4883 {
     int256 public immutable zIndex;
 
     constructor()
-        ERC721PayableMintable("Panda Nouns Glasses", "PNG", 0.0001 ether, 13, 130)
+        ERC721PayableMintable("Panda Nouns Glasses", "PNG", 0.00009999 ether, 99, 9999)
     {
         zIndex = 100;
     }

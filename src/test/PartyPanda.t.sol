@@ -7,13 +7,13 @@ import {MockERC721ComposableSVG} from "./mocks/MockERC721ComposableSVG.sol";
 import {NamedToken} from "../NamedToken.sol";
 import {ERC721PayableMintable} from "../ERC721PayableMintable.sol";
 import {ERC721PayableMintableComposableSVG} from "../ERC721PayableMintableComposableSVG.sol";
-import {Heart} from "../Heart.sol";
+import {PartyPanda} from "../PartyPanda.sol";
 
-contract HeartTest is DSTest {
+contract PartyPandaTest is DSTest {
     Vm public constant vm = Vm(HEVM_ADDRESS);
-    Heart token;
+    PartyPanda token;
 
-    uint256 constant PAYMENT = 0.001 ether;
+    uint256 constant PAYMENT = 0.000888 ether;
 
     address constant OTHER_ADDRESS = address(1);
     address constant OWNER = address(2);
@@ -24,12 +24,12 @@ contract HeartTest is DSTest {
 
     function setUp() public {
         vm.prank(OWNER);
-        token = new Heart();
+        token = new PartyPanda();
     }
 
     function testMetadata() public {
-        assertEq(token.name(), "Heart");
-        assertEq(token.symbol(), "HRT");
+        assertEq(token.name(), "Party Panda");
+        assertEq(token.symbol(), "PRTY");
     }
 
     /// Mint
@@ -70,7 +70,7 @@ contract HeartTest is DSTest {
     function testTokenName() public {
         token.mint{value: PAYMENT}();
 
-        assertEq(token.tokenName(0), "Heart #0");
+        assertEq(token.tokenName(0), "Party Panda #0");
     }
 
     function testChangeTokenName() public {

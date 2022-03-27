@@ -9,7 +9,7 @@ import {IERC4883} from "./IERC4883.sol";
 import {ERC721PayableMintableComposableSVG} from "./ERC721PayableMintableComposableSVG.sol";
 import {NamedToken} from "./NamedToken.sol";
 
-contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
+contract PartyPanda is ERC721PayableMintableComposableSVG, NamedToken {
     using Colours for bytes3;
 
     /// ERRORS
@@ -18,10 +18,10 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
 
     mapping(uint256 => bytes3) private _colours;
 
-    string constant NAME = "Heart";
+    string constant NAME = "Party Panda";
 
     constructor()
-        ERC721PayableMintableComposableSVG(NAME, "HRT", 0.001 ether, 88, 888, 0)
+        ERC721PayableMintableComposableSVG(NAME, "PRTY", 0.000888 ether, 88, 888, 0)
         NamedToken(NAME)
     {}
 
@@ -56,7 +56,7 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
 
         string memory tokenName_ = tokenName(tokenId);
         string
-            memory description = "Heart NFT. Heart emoji designed by OpenMoji, the open-source emoji and icon project. License: CC BY-SA 4.0";
+            memory description = "Party Panda NFT.";
 
         string memory image = _generateBase64Image(tokenId);
         string memory attributes = _generateAttributes(tokenId);
@@ -81,7 +81,7 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
             );
     }
 
-    function _generateHeartValue(uint256 tokenId)
+    function _generatePartyValue(uint256 tokenId)
         internal
         pure
         returns (string memory)
@@ -95,8 +95,8 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
         returns (string memory)
     {
         string memory attributes = string.concat(
-            '{"trait_type": "heart", "value": "',
-            _generateHeartValue(tokenId),
+            '{"trait_type": "party", "value": "',
+            _generatePartyValue(tokenId),
             '"}'
             ',{"trait_type": "colour", "value": "',
             _colours[tokenId].toColour(),
@@ -127,9 +127,9 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
     {
         string memory svg = string.concat(
             '<svg id="',
-            "heart",
+            "panda",
             Strings.toString(tokenId),
-            '" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">',
+            '" width="288" height="288" viewBox="0 0 288 288" fill="none" xmlns="http://www.w3.org/2000/svg">',
             render(tokenId),
             "</svg>"
         );
@@ -137,10 +137,9 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
         return svg;
     }
 
-    function render(uint256 tokenId)
-        public
+    function _renderBody(uint256 tokenId)
+        internal
         view
-        override
         returns (string memory)
     {
         string memory colourValue = string.concat(
@@ -150,15 +149,31 @@ contract Heart is ERC721PayableMintableComposableSVG, NamedToken {
 
         return
             string.concat(
-                _renderBackground(tokenId),
-                '<g id="color">'
-                '<path fill="',
-                colourValue,
-                '" d="M59.5,25c0-6.9036-5.5964-12.5-12.5-12.5c-4.7533,0-8.8861,2.6536-11,6.5598 C33.8861,15.1536,29.7533,12.5,25,12.5c-6.9036,0-12.5,5.5964-12.5,12.5c0,2.9699,1.0403,5.6942,2.7703,7.8387l-0.0043,0.0034 L36,58.5397l20.7339-25.6975l-0.0043-0.0034C58.4597,30.6942,59.5,27.9699,59.5,25z"/>'
+                '<g id="panda">'
+                '<!--Copyright 2022 Alex Party Panda https://github.com/AlexPartyPanda-->'
+                '<path d="M97.5 183.5c-22.878-11.248-31.543-10.843-37 6 1.297 16.917 3.99 21.712 11 25 10.177 4.886 38.421-1.909 71-6.5 45.864 5.702 75.701 9.828 81.5 6.5 8.506-5.407 11.972-9.787 11-25-8.153-11.761-13.16-16.601-26-9.5l-16-8.5-95.5 12Z" fill="',colourValue, '" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<path d="m115 205.5-4.5-41h57v45c-16.505 5.452-33.861 9.59-52.5-4Z" fill="#FFF" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<path d="M124 215c-6.408 1.507-33.142 12.135-39-4 .419-11.525 1.364-21.559 3.647-31.5 3.406-14.829 9.792-29.45 21.853-48.5 27.727 17.26 40.773 13.3 68.5.5 12.01 17.087 19.173 31.974 19.093 44.5-.027 4.215 1.002 8.615 0 13.5 0 0-1.593 9.5-1.593 21.5s-32.5 15.5-36 0-1.276-7.912 3.5-35c-14.577-2.983-24.32-2.712-43.5 0 2.845 4.885 9.908 37.493 3.5 39Zm36.5-143.5c18.121-8.994 17.214-.228 16.5 20.5l-16.5-20.5Zm-52.5 14c-2.876-17.522 1.048-21.717 18-16.5l-18 16.5Z" fill="',colourValue, '" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<path d="M177 92c-17.5-35.5-52-35.5-70.5-3-8.666 23.757-9.202 33.968 4 42 27.357 18.75 41.337 16.44 69 0 3.5-5.5 6.499-24.919-2.5-39Z" fill="#FFF" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<path d="M131.5 125.5c9.101 3.874 10.24 3.497 18 0" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<path d="M129 111.5c4.5-4.5 17-2.5 19 1-5 5-14 4-19-1ZM125 87c5.099 5.584 2.743 5.485 4.5 9-4.985.625-8.844 3.99-17.5 15-1.172-3.319-1.471-3.485-3-8.5-1.529-5.014 10.901-21.084 16-15.5Z" fill="',colourValue, '" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<circle cx="119" cy="98" r="4" fill="#000"/>'
+                '<path d="M162.5 85c-6.664 2.996-9.447 5.477-12.5 11.5 8.04 4.452 12.128 8.376 18.5 18.5l5.5-7.5c-2.463-11.46-4.46-17.073-11.5-22.5Z" fill="',colourValue, '" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+                '<circle cx="159" cy="99" r="4" fill="#000"/>'
                 '</g>'
-                '<g id="line">'
-                '<path fill="none" stroke="#000000" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" d="M59.5,25 c0-6.9036-5.5964-12.5-12.5-12.5c-4.7533,0-8.8861,2.6536-11,6.5598C33.8861,15.1536,29.7533,12.5,25,12.5 c-6.9036,0-12.5,5.5964-12.5,12.5c0,2.9699,1.0403,5.6942,2.7703,7.8387l-0.0043,0.0034L36,58.5397l20.7339-25.6975l-0.0043-0.0034 C58.4597,30.6942,59.5,27.9699,59.5,25z"/>'
-                '</g>',
+            );
+    }
+
+    function render(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        return
+            string.concat(
+                _renderBackground(tokenId),
+                _renderBody(tokenId),
                 _renderForeground(tokenId)
             );
     }

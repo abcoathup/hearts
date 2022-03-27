@@ -11,18 +11,14 @@ import {Bytes} from "./libraries/Bytes.sol";
 import {IERC4883} from "./IERC4883.sol";
 import {ERC721PayableMintable} from "./ERC721PayableMintable.sol";
 
-contract BoxBackground is ERC721PayableMintable, IERC4883 {
+contract WaveBackground is ERC721PayableMintable, IERC4883 {
     using Colours for bytes3;
-
-    /// ERRORS
-
-    /// EVENTS
 
     mapping(uint256 => bytes3) private _colours;
 
     int256 public immutable zIndex;
 
-    constructor() ERC721PayableMintable("Box", "BOX", 0.0001 ether, 23, 230) {
+    constructor() ERC721PayableMintable("Wave Background", "WAVE", 0 ether, 42, 42) {
         zIndex = -100;
     }
 
@@ -72,7 +68,7 @@ contract BoxBackground is ERC721PayableMintable, IERC4883 {
             " #",
             Strings.toString(tokenId)
         );
-        string memory description = "Box NFT.";
+        string memory description = "Wave. Background for Party Panda NFTs";
 
         string memory image = _generateBase64Image(tokenId);
         string memory attributes = _generateAttributes(tokenId);
@@ -102,8 +98,6 @@ contract BoxBackground is ERC721PayableMintable, IERC4883 {
         view
         returns (string memory)
     {
-        //TODO get name of accessory and background
-
         string memory attributes = string.concat(
             '{"trait_type": "colour", "value": "',
             _colours[tokenId].toColour(),
@@ -128,9 +122,9 @@ contract BoxBackground is ERC721PayableMintable, IERC4883 {
     {
         string memory svg = string.concat(
             '<svg id="',
-            "box",
+            "wave",
             Strings.toString(tokenId),
-            '" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">',
+            '" width="288" height="288" viewBox="0 0 288 288" fill="none" xmlns="http://www.w3.org/2000/svg">',
             render(tokenId),
             "</svg>"
         );
@@ -151,13 +145,17 @@ contract BoxBackground is ERC721PayableMintable, IERC4883 {
 
         return
             string.concat(
-                '<g id="color">'
-                '<path fill="',
-                colourValue,
-                '" d="M59.0349,60h-46.07A.9679.9679,0,0,1,12,59.0349v-46.07A.9679.9679,0,0,1,12.9651,12h46.07A.9679.9679,0,0,1,60,12.9651v46.07A.9679.9679,0,0,1,59.0349,60Z"/>'
-                '</g>'
-                '<g id="line">'
-                '<path fill="none" stroke="#000" stroke-linejoin="round" stroke-width="2" d="M59.0349,60h-46.07A.9679.9679,0,0,1,12,59.0349v-46.07A.9679.9679,0,0,1,12.9651,12h46.07A.9679.9679,0,0,1,60,12.9651v46.07A.9679.9679,0,0,1,59.0349,60Z"/>'
+                '<g id="wave">'
+                '<g transform="translate(144,144) scale(1,1) translate(-144,-144)"><linearGradient id="lg-0.0007576276008076643" x1="0" x2="1" y1="0" y2="0">'
+                '<stop stop-color="#ff00ff" offset="0"></stop>'
+                '<stop stop-color="#00ffff" offset="1"></stop>'
+                '</linearGradient><path d="" fill="url(#lg-0.0007576276008076643)" opacity="0.4">'
+                '<animate attributeName="d" dur="10s" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcmod="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="0s" values="M0 0L 0 249.3478160469087Q 28.8 271.20875796797964  57.6 243.19677845047337T 115.2 220.84783850028492T 172.8 190.67319530444155T 230.4 198.70816949285725T 288 177.7854552220291L 288 0 Z;M0 0L 0 244.01646850408764Q 28.8 258.5770569600993  57.6 228.0001947903528T 115.2 240.18036668638092T 172.8 207.11316893376122T 230.4 204.29282283007936T 288 189.51717085666166L 288 0 Z;M0 0L 0 282.5531364453796Q 28.8 261.8044198477804  57.6 224.14288991057037T 115.2 217.13703938710012T 172.8 194.86879702206704T 230.4 198.2381575000438T 288 166.99020553361333L 288 0 Z;M0 0L 0 249.3478160469087Q 28.8 271.20875796797964  57.6 243.19677845047337T 115.2 220.84783850028492T 172.8 190.67319530444155T 230.4 198.70816949285725T 288 177.7854552220291L 288 0 Z"></animate>'
+                '</path><path d="" fill="url(#lg-0.0007576276008076643)" opacity="0.4">'
+                '<animate attributeName="d" dur="10s" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcmod="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-3.3333333333333335s" values="M0 0L 0 241.91399976511337Q 28.8 272.773031824481  57.6 221.6330991204484T 115.2 203.554617966047T 172.8 215.3598833767817T 230.4 208.331215945932T 288 159.3922817012802L 288 0 Z;M0 0L 0 267.89249867026297Q 28.8 261.5378358664616  57.6 220.72516882318087T 115.2 204.88274072914487T 172.8 187.6560243398394T 230.4 167.41828303154165T 288 195.78093900615812L 288 0 Z;M0 0L 0 252.82333411101428Q 28.8 293.3915055414478  57.6 252.16446051277478T 115.2 201.5700091585775T 172.8 201.7484716305146T 230.4 202.12263583758465T 288 173.66216218576926L 288 0 Z;M0 0L 0 241.91399976511337Q 28.8 272.773031824481  57.6 221.6330991204484T 115.2 203.554617966047T 172.8 215.3598833767817T 230.4 208.331215945932T 288 159.3922817012802L 288 0 Z"></animate>'
+                '</path><path d="" fill="url(#lg-0.0007576276008076643)" opacity="0.4">'
+                '<animate attributeName="d" dur="10s" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcmod="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-6.666666666666667s" values="M0 0L 0 263.26462729185835Q 28.8 291.59686587726713  57.6 255.90098957857725T 115.2 228.43886085937962T 172.8 212.01054854726448T 230.4 187.10076529478778T 288 161.9028458031765L 288 0 Z;M0 0L 0 239.01027845858462Q 28.8 265.0748050205812  57.6 234.1974008014628T 115.2 210.2224266016108T 172.8 221.36373409559496T 230.4 202.0501911637237T 288 179.7894671663367L 288 0 Z;M0 0L 0 265.45535094365033Q 28.8 248.27083050546915  57.6 218.6680765245456T 115.2 217.29793880408266T 172.8 187.19331156562936T 230.4 195.84859895912288T 288 151.99493293483093L 288 0 Z;M0 0L 0 263.26462729185835Q 28.8 291.59686587726713  57.6 255.90098957857725T 115.2 228.43886085937962T 172.8 212.01054854726448T 230.4 187.10076529478778T 288 161.9028458031765L 288 0 Z"></animate>'
+                '</path></g>'
                 '</g>'
             );
     }
